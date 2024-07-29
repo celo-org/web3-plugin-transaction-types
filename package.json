@@ -1,0 +1,39 @@
+{
+  "name": "@celo/web3-plugin-transaction-types",
+  "version": "0.0.1",
+  "description": "TODO",
+  "author": "Celo",
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "sideEffects": false,
+  "homepage": "https://docs.celo.org/developer/TODO",
+  "repository": "https://github.com/celo-org/developer-tooling/tree/master/packages/third-party/web3-plugin",
+  "scripts": {
+    "prepublishOnly": "yarn build",
+    "build": "yarn run --top-level tsc -b .",
+    "clean": "yarn run --top-level tsc -b . --clean",
+    "docs": "yarn run --top-level typedoc",
+    "test": "yarn run --top-level jest --runInBand --ci --forceExit",
+    "test:verbose": "yarn run --top-level jest --verbose",
+    "lint": "yarn run --top-level eslint -c .eslintrc.js "
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "peerDependencies": {
+    "web3": ">= 4.0.2 < 5"
+  },
+  "devDependencies": {
+    "@celo/typescript": "^0.0.2",
+    "eslint": "^9.8.0",
+    "eslint-plugin-jest": "^28.6.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^7.17.0",
+    "web3": "^4.11.1"
+  },
+  "dependencies": {
+    "web3-eth-accounts": "^4.1.3",
+    "web3-utils": "^4.3.1"
+  }
+}
