@@ -1,0 +1,121 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CeloTransactionTypesPlugin should be registered under .celo namespace 1`] = `
+CeloTransactionTypesPlugin {
+  "_accountProvider": {
+    "create": [Function],
+    "decrypt": [Function],
+    "encrypt": [Function],
+    "hashMessage": [Function],
+    "parseAndValidatePrivateKey": [Function],
+    "privateKeyToAccount": [Function],
+    "privateKeyToAddress": [Function],
+    "privateKeyToPublicKey": [Function],
+    "recover": [Function],
+    "recoverTransaction": [Function],
+    "sign": [Function],
+    "signTransaction": [Function],
+    "wallet": [],
+  },
+  "_emitter": EventEmitter {
+    "_events": {},
+    "_eventsCount": 0,
+    "maxListeners": 9007199254740991,
+  },
+  "_requestManager": Web3RequestManager {
+    "_emitter": EventEmitter {
+      "_events": {
+        "BEFORE_PROVIDER_CHANGE": EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        "PROVIDER_CHANGED": EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+      },
+      "_eventsCount": 2,
+      "maxListeners": 9007199254740991,
+    },
+    "_provider": HttpProvider {
+      "clientUrl": "https://forno.celo.org",
+      "httpProviderOptions": undefined,
+    },
+    "useRpcCallSpecification": undefined,
+  },
+  "_subscriptionManager": Web3SubscriptionManager {
+    "_subscriptions": Map {},
+    "registeredSubscriptions": {
+      "logs": [class LogsSubscription],
+      "newBlockHeaders": [class NewHeadsSubscription],
+      "newHeads": [class NewHeadsSubscription],
+      "newPendingTransactions": [class NewPendingTransactionsSubscription],
+      "pendingTransactions": [class NewPendingTransactionsSubscription],
+      "syncing": [class SyncingSubscription],
+    },
+    "requestManager": Web3RequestManager {
+      "_emitter": EventEmitter {
+        "_events": {
+          "BEFORE_PROVIDER_CHANGE": EE {
+            "context": [Circular],
+            "fn": [Function],
+            "once": false,
+          },
+          "PROVIDER_CHANGED": EE {
+            "context": [Circular],
+            "fn": [Function],
+            "once": false,
+          },
+        },
+        "_eventsCount": 2,
+        "maxListeners": 9007199254740991,
+      },
+      "_provider": HttpProvider {
+        "clientUrl": "https://forno.celo.org",
+        "httpProviderOptions": undefined,
+      },
+      "useRpcCallSpecification": undefined,
+    },
+    "tolerateUnlinkedSubscription": false,
+  },
+  "_wallet": [],
+  "config": {
+    "blockHeaderTimeout": 10,
+    "contractDataInputFill": "data",
+    "defaultAccount": undefined,
+    "defaultBlock": "latest",
+    "defaultChain": "mainnet",
+    "defaultCommon": undefined,
+    "defaultHardfork": "london",
+    "defaultMaxPriorityFeePerGas": "0x9502f900",
+    "defaultNetworkId": undefined,
+    "defaultReturnFormat": {
+      "bytes": "BYTES_HEX",
+      "number": "NUMBER_BIGINT",
+    },
+    "defaultTransactionType": "0x2",
+    "enableExperimentalFeatures": {
+      "useRpcCallSpecification": false,
+      "useSubscriptionWhenCheckingBlockTimeout": false,
+    },
+    "handleRevert": false,
+    "maxListenersWarningThreshold": 100,
+    "transactionBlockTimeout": 50,
+    "transactionBuilder": undefined,
+    "transactionConfirmationBlocks": 24,
+    "transactionConfirmationPollingInterval": undefined,
+    "transactionPollingInterval": 1000,
+    "transactionPollingTimeout": 750000,
+    "transactionReceiptPollingInterval": undefined,
+    "transactionSendTimeout": 750000,
+    "transactionTypeParser": undefined,
+  },
+  "pluginNamespace": "celo",
+  "providers": {
+    "HttpProvider": [class HttpProvider],
+    "WebsocketProvider": [class WebSocketProvider],
+  },
+}
+`;

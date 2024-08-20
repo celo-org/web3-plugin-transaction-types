@@ -6,15 +6,20 @@ import { TxTypeToPrefix } from "./utils";
 
 // create new plugin and add `SomeNewTxTypeTransaction` to the library
 
-class CeloTransactionTypesPlugin extends Web3PluginBase {
+export class CeloTransactionTypesPlugin extends Web3PluginBase {
   public pluginNamespace = "celo" as const;
   public constructor() {
     super();
+
     TransactionFactory.registerTransactionType(
       TxTypeToPrefix.cip64,
       CIP64Transaction
     );
-    // TransactionFactory.registerTransactionType(TxTypeToPrefix.cip66, CIP66Transaction)
+
+    // TransactionFactory.registerTransactionType(
+    //   TxTypeToPrefix.cip66,
+    //   CIP66Transaction
+    // );
   }
 }
 

@@ -10,13 +10,12 @@
   "homepage": "https://docs.celo.org/developer/TODO",
   "repository": "https://github.com/celo-org/developer-tooling/tree/master/packages/third-party/web3-plugin",
   "scripts": {
-    "prepublishOnly": "yarn build",
-    "build": "yarn run --top-level tsc -b .",
-    "clean": "yarn run --top-level tsc -b . --clean",
-    "docs": "yarn run --top-level typedoc",
-    "test": "yarn run --top-level jest --runInBand --ci --forceExit",
-    "test:verbose": "yarn run --top-level jest --verbose",
-    "lint": "yarn run --top-level eslint -c .eslintrc.js "
+    "prepublishOnly": "bun run clean && bun run build",
+    "build": "bun run tsc -b .",
+    "dev": "bun run tsc -b . --watch",
+    "clean": "bun run tsc -b . --clean",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   },
   "files": [
     "lib/**/*"
@@ -26,6 +25,7 @@
   },
   "devDependencies": {
     "@celo/typescript": "^0.0.2",
+    "@types/bun": "^1.1.6",
     "eslint": "^9.8.0",
     "eslint-plugin-jest": "^28.6.0",
     "typescript": "^5.5.4",

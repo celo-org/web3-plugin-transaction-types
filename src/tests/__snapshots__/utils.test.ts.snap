@@ -1,0 +1,36 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CeloChains chains should be configured 1`] = `
+{
+  "alfajores": {
+    "chainId": 44787,
+    "explorerUrl": "https://alfajores.celoscan.io",
+    "rpcUrl": "https://alfajores-forno.celo-testnet.org",
+  },
+  "celo": {
+    "chainId": 42220,
+    "explorerUrl": "https://celoscan.io",
+    "rpcUrl": "https://forno.celo.org",
+  },
+  "mainnet": {
+    "chainId": 42220,
+    "explorerUrl": "https://celoscan.io",
+    "rpcUrl": "https://forno.celo.org",
+  },
+  "testnet": {
+    "chainId": 44787,
+    "explorerUrl": "https://alfajores.celoscan.io",
+    "rpcUrl": "https://alfajores-forno.celo-testnet.org",
+  },
+}
+`;
+
+exports[`Types tx types should be configured 1`] = `
+{
+  "cip42": "0x7c",
+  "cip64": "0x7b",
+  "cip66": "0x7a",
+  "eip1559": "0x02",
+  "ethereum-legacy": "",
+}
+`;

@@ -17,14 +17,16 @@ import {
   toUint8Array,
   txUtils,
   uint8ArrayToBigInt,
+  unpadUint8Array,
 } from "web3-eth-accounts";
-import { Address } from "web3-eth-accounts/lib/commonjs/tx/address";
 import {
   bytesToHex,
   hexToBytes,
   uint8ArrayConcat,
   uint8ArrayEquals,
 } from "web3-utils";
+import { Address } from "web3";
+import { TxTypeToPrefix } from "./utils";
 
 const {
   getAccessListData,
@@ -36,9 +38,9 @@ const {
 const MAX_INTEGER = BigInt(
   "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 );
-export const TRANSACTION_TYPE = 0x7b;
+
 const TRANSACTION_TYPE_UINT8ARRAY = hexToBytes(
-  TRANSACTION_TYPE.toString(16).padStart(2, "0")
+  TxTypeToPrefix.cip64.padStart(2, "0")
 );
 
 type CIP64Data = FeeMarketEIP1559TxData & {
@@ -79,34 +81,18 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
 
   public readonly common: Common;
 
-  /**
-   * Instantiate a transaction from a data dictionary.
-   *
-   * Format: { chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, to, value, data,
-   * accessList, v, r, s }
-   *
-   * Notes:
-   * - `chainId` will be set automatically if not provided
-   * - All parameters are optional and have some basic default values
-   */
   public static fromTxData(txData: CIP64Data, opts: TxOptions = {}) {
     return new CIP64Transaction(txData, opts);
   }
 
-  /**
-   * Instantiate a transaction from the serialized tx.
-   *
-   * Format: `0x7b || rlp([chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, to, value, data,
-   * accessList, feeCurrency, signatureYParity, signatureR, signatureS])`
-   */
   public static fromSerializedTx(serialized: Uint8Array, opts: TxOptions = {}) {
     if (
       !uint8ArrayEquals(serialized.subarray(0, 1), TRANSACTION_TYPE_UINT8ARRAY)
     ) {
       throw new Error(
-        `Invalid serialized tx input: not an CIP64 transaction (wrong tx type, expected: ${TRANSACTION_TYPE}, received: ${bytesToHex(
-          serialized.subarray(0, 1)
-        )}`
+        `Invalid serialized tx input: not an CIP64 transaction (wrong tx type, expected: ${
+          TxTypeToPrefix.cip64
+        }, received: ${bytesToHex(serialized.subarray(0, 1))}`
       );
     }
     const values = RLP.decode(serialized.subarray(1));
@@ -118,12 +104,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     return CIP64Transaction.fromValuesArray(values as any, opts);
   }
 
-  /**
-   * Create a transaction from a values array.
-   *
-   * Format: `[chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, to, value, data,
-   * accessList, signatureYParity, signatureR, signatureS]`
-   */
   public static fromValuesArray(
     values: CIP64ValuesArray,
     opts: TxOptions = {}
@@ -173,7 +153,7 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
         value,
         data,
         accessList: accessList ?? [],
-        feeCurrency: new Address(feeCurrency),
+        feeCurrency: Buffer.from(feeCurrency).toString("hex"),
         v: v !== undefined ? uint8ArrayToBigInt(v) : undefined,
         r,
         s,
@@ -181,16 +161,8 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
       opts
     );
   }
-
-  /**
-   * This constructor takes the values, validates them, assigns them and freezes the object.
-   *
-   * It is not recommended to use this constructor directly. Instead use
-   * the static factory methods to assist in creating a Transaction object from
-   * varying data types.
-   */
   public constructor(txData: CIP64Data, opts: TxOptions = {}) {
-    super({ ...txData, type: TRANSACTION_TYPE }, opts);
+    super({ ...txData, type: TxTypeToPrefix.cip64 }, opts);
     const { chainId, accessList, maxFeePerGas, maxPriorityFeePerGas } = txData;
 
     this.common = this._getCommon(opts.common, chainId);
@@ -244,9 +216,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     }
   }
 
-  /**
-   * The amount of gas paid for the data in this tx
-   */
   public getDataFee(): bigint {
     // TODO adjust for feeCurrency
     if (
@@ -269,10 +238,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     return cost;
   }
 
-  /**
-   * The up front amount that an account must have for this transaction to be valid
-   * @param baseFee The base fee of the block (will be set to 0 if not provided)
-   */
   public getUpfrontCost(baseFee = BigInt(0)): bigint {
     // TODO adjust for feeCurrency
     const prio = this.maxPriorityFeePerGas;
@@ -282,19 +247,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     return this.gasLimit * gasPrice + this.value;
   }
 
-  /**
-   * Returns a Uint8Array Array of the raw Uint8Arrays of the CIP64 transaction, in order.
-   *
-   * Format: `[chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, to, value, data,
-   * accessList, feeCurrency, signatureYParity, signatureR, signatureS]`
-   *
-   * Use {@link CIP64Transaction.serialize} to add a transaction to a block
-   * with {@link Block.fromValuesArray}.
-   *
-   * For an unsigned tx this method uses the empty Uint8Array values for the
-   * signature parameters `v`, `r` and `s` for encoding. For an EIP-155 compliant
-   * representation for external signing use {@link CIP64Transaction.getMessageToSign}.
-   */
   public raw(): TxValuesArray {
     return [
       bigIntToUnpaddedUint8Array(this.chainId),
@@ -306,7 +258,7 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
       bigIntToUnpaddedUint8Array(this.value),
       this.data,
       this.accessList,
-      this.feeCurrency.buf,
+      unpadUint8Array(hexToBytes(this.feeCurrency)),
       this.v !== undefined
         ? bigIntToUnpaddedUint8Array(this.v)
         : Uint8Array.from([]),
@@ -319,34 +271,17 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     ] as TxValuesArray;
   }
 
-  /**
-   * Returns the serialized encoding of the CIP64 transaction.
-   *
-   * Format: `0x7b || rlp([chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, to, value, data,
-   * accessList, feeCurrency, signatureYParity, signatureR, signatureS])`
-   *
-   * Note that in contrast to the legacy tx serialization format this is not
-   * valid RLP any more due to the raw tx type preceding and concatenated to
-   * the RLP encoding of the values.
-   */
   public serialize(): Uint8Array {
     const base = this.raw();
+    console.log({
+      base,
+      TRANSACTION_TYPE_UINT8ARRAY,
+      encoded: RLP.encode(base),
+      full: uint8ArrayConcat(TRANSACTION_TYPE_UINT8ARRAY, RLP.encode(base)),
+    });
     return uint8ArrayConcat(TRANSACTION_TYPE_UINT8ARRAY, RLP.encode(base));
   }
 
-  /**
-   * Returns the serialized unsigned tx (hashed or raw), which can be used
-   * to sign the transaction (e.g. for sending to a hardware wallet).
-   *
-   * Note: in contrast to the legacy tx the raw message format is already
-   * serialized and doesn't need to be RLP encoded any more.
-   *
-   * ```javascript
-   * const serializedMessage = tx.getMessageToSign(false) // use this for the HW wallet input
-   * ```
-   *
-   * @param hashMessage - Return hashed message if set to true (default: true)
-   */
   public getMessageToSign(hashMessage = true): Uint8Array {
     const base = this.raw().slice(0, 10);
     const message = uint8ArrayConcat(
@@ -359,12 +294,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     return message;
   }
 
-  /**
-   * Computes a sha3-256 hash of the serialized tx.
-   *
-   * This method can only be used for signed txs (it throws otherwise).
-   * Use {@link CIP64Transaction.getMessageToSign} to get a tx hash for the purpose of signing.
-   */
   public hash(): Uint8Array {
     if (!this.isSigned()) {
       const msg = this._errorMsg(
@@ -382,16 +311,10 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     return keccak256(this.serialize());
   }
 
-  /**
-   * Computes a sha3-256 hash which can be used to verify the signature
-   */
   public getMessageToVerifySignature(): Uint8Array {
     return this.getMessageToSign();
   }
 
-  /**
-   * Returns the public key of the sender
-   */
   public getSenderPublicKey(): Uint8Array {
     if (!this.isSigned()) {
       const msg = this._errorMsg(
@@ -441,9 +364,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     );
   }
 
-  /**
-   * Returns an object with the JSON representation of the transaction
-   */
   public toJSON(): CIP64JsonTx {
     const accessListJSON = getAccessListJSON(this.accessList);
 
@@ -457,28 +377,19 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
       value: bigIntToHex(this.value),
       data: bytesToHex(this.data),
       accessList: accessListJSON,
-      feeCurrency: this.feeCurrency.toString(),
+      feeCurrency: this.feeCurrency,
       v: this.v !== undefined ? bigIntToHex(this.v) : undefined,
       r: this.r !== undefined ? bigIntToHex(this.r) : undefined,
       s: this.s !== undefined ? bigIntToHex(this.s) : undefined,
     };
   }
 
-  /**
-   * Return a compact error string representation of the object
-   */
   public errorStr() {
     let errorStr = this._getSharedErrorPostfix();
     errorStr += ` maxFeePerGas=${this.maxFeePerGas} maxPriorityFeePerGas=${this.maxPriorityFeePerGas}`;
     return errorStr;
   }
 
-  /**
-   * Internal helper function to create an annotated error message
-   *
-   * @param msg Base error message
-   * @hidden
-   */
   protected _errorMsg(msg: string) {
     return `${msg} (${this.errorStr()})`;
   }
