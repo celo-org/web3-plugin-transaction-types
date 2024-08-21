@@ -11,7 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
       - uses: oven-sh/setup-bun@v2
       - run: bun install
+      - run: rm -rf node_modules/@celo/dev-utils/node_modules
       - run: bun run build
       - run: bun run test

@@ -24,6 +24,8 @@
     "web3": ">= 4.0.2 < 5"
   },
   "devDependencies": {
+    "@celo/dev-utils": "^0.0.5",
+    "@celo/devchain-anvil": "12.0.0-canary.0",
     "@celo/typescript": "^0.0.2",
     "@types/bun": "^1.1.6",
     "eslint": "^9.8.0",
@@ -37,5 +39,8 @@
     "@celo/abis-l2": "npm:@celo/abis@12.0.0-canary.23",
     "web3-eth-accounts": "^4.1.3",
     "web3-utils": "^4.3.1"
+  },
+  "patchedDependencies": {
+    "@celo/dev-utils@0.0.5": "patches/@celo%2Fdev-utils@0.0.5.patch"
   }
 }

@@ -8,6 +8,11 @@ import {
 } from "../utils";
 import Web3 from "web3";
 import { CeloTransactionTypesPlugin } from "..";
+import {
+  testWithAnvilL1,
+  testWithAnvilL2,
+} from "@celo/dev-utils/lib/anvil-test";
+
 describe("CeloChains", () => {
   test("chains should be configured", () => {
     expect(CeloChains).toMatchSnapshot();
@@ -20,28 +25,36 @@ describe("Types", () => {
   });
 });
 
-describe("getContractAddress()", () => {
-  const web3 = new Web3(CeloChains.alfajores.rpcUrl);
+testWithAnvilL1("l1", (web3) => {
   const plugin = new CeloTransactionTypesPlugin();
   web3.registerPlugin(plugin);
-  test("returns a contract address", async () => {
-    expect(getContractAddress(plugin, "FeeCurrencyWhitelist")).resolves.toMatch(
-      /0x[0-9a-f]{40}/i
-    );
+
+  describe("getContractAddress()", () => {
+    test("returns a contract address", async () => {
+      expect(
+        getContractAddress(plugin, "FeeCurrencyWhitelist")
+      ).resolves.toMatch(/0x[0-9a-f]{40}/i);
+    });
+  });
+
+  describe("isCel2()", () => {
+    expect(isCel2(plugin)).resolves.toBe(false);
   });
 });
 
-describe("isCel2()", () => {
-  test("l1", async () => {
-    const web3 = new Web3(CeloChains.alfajores.rpcUrl);
-    const plugin = new CeloTransactionTypesPlugin();
-    web3.registerPlugin(plugin);
-    expect(isCel2(plugin)).resolves.toBe(false);
+testWithAnvilL2("l2", (web3) => {
+  const plugin = new CeloTransactionTypesPlugin();
+  web3.registerPlugin(plugin);
+
+  describe("getContractAddress()", () => {
+    test("returns a contract address", async () => {
+      expect(
+        getContractAddress(plugin, "FeeCurrencyDirectory")
+      ).resolves.toMatch(/0x[0-9a-f]{40}/i);
+    });
   });
-  test("l2", async () => {
-    const web3 = new Web3(CeloChains.dango.rpcUrl);
-    const plugin = new CeloTransactionTypesPlugin();
-    web3.registerPlugin(plugin);
-    expect(isCel2(plugin)).resolves.toBe(true);
+
+  describe("isCel2()", () => {
+    expect(isCel2(plugin)).resolves.toBe(false);
   });
 });

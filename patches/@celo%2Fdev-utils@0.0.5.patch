@@ -1,0 +1,62 @@
+diff --git a/lib/anvil-test.js b/lib/anvil-test.js
+index 94009386b44285a560e08a95d870ec27995f2360..64197a2cb0b765e80c4b554c53a08c555981e08d 100644
+--- a/lib/anvil-test.js
++++ b/lib/anvil-test.js
+@@ -10,7 +10,8 @@ exports.STABLES_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+ exports.DEFAULT_OWNER_ADDRESS = exports.STABLES_ADDRESS;
+ function createInstance(stateFilePath) {
+     // preparation for not needing to have --runInBand for anvil tests
+-    const port = ANVIL_PORT + (process.pid - process.ppid);
++    let port = ANVIL_PORT + (process.pid - process.ppid);
++    port += Math.floor(Math.random() * 1000)
+     const options = {
+         port,
+         loadState: stateFilePath,
+diff --git a/lib/test-utils.js b/lib/test-utils.js
+index 3fb8780db1d7fcf1b97edd4db558976853326354..28115e121c56a17d86d73a7573e54c69997d628e 100644
+--- a/lib/test-utils.js
++++ b/lib/test-utils.js
+@@ -4,6 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.testWithWeb3 = exports.evmSnapshot = exports.evmRevert = exports.jsonRpcCall = exports.NetworkConfig = exports.TEST_GAS_LIMIT = exports.TEST_GAS_PRICE = exports.TEST_BALANCE = exports.TEST_MNEMONIC = void 0;
++
++const { beforeAll, beforeEach, describe, afterAll } = require('bun:test')
++
+ const web3_1 = __importDefault(require("web3"));
+ const migration_override_json_1 = __importDefault(require("./migration-override.json"));
+ exports.TEST_MNEMONIC = 'concert load couple harbor equip island argue ramp clarify fence smart topic';
+diff --git a/package.json b/package.json
+index 54ce3ea580a0259264c487522ec6c471bd82fd2a..33a2a88dc0837270b56bd870915722678bde1665 100644
+--- a/package.json
++++ b/package.json
+@@ -20,24 +20,22 @@
+     "prepack": "yarn build"
+   },
+   "dependencies": {
+-    "@celo/abis": "^11.0.0",
+-    "@celo/connect": "^6.0.1",
+     "@viem/anvil": "^0.0.9",
+     "bignumber.js": "^9.0.0",
+     "fs-extra": "^8.1.0",
+-    "ganache": "npm:@celo/ganache@7.8.0-unofficial.0",
+     "targz": "^1.0.1",
+-    "tmp": "^0.1.0",
+-    "web3": "1.10.4",
+-    "web3-core-helpers": "1.10.4"
++    "tmp": "^0.1.0"
+   },
+   "devDependencies": {
+-    "@celo/devchain-anvil": "9.0.0-canary.0",
+     "@celo/typescript": "workspace:^",
+     "@tsconfig/recommended": "^1.0.3",
+     "@types/fs-extra": "^8.1.0",
+     "@types/targz": "1.0.0"
+   },
++  "peerDependencies": {
++    "@celo/devchain-anvil": "*",
++    "web3": "*"
++  },
+   "engines": {
+     "node": ">=18.14.2"
+   }

@@ -273,12 +273,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
 
   public serialize(): Uint8Array {
     const base = this.raw();
-    console.log({
-      base,
-      TRANSACTION_TYPE_UINT8ARRAY,
-      encoded: RLP.encode(base),
-      full: uint8ArrayConcat(TRANSACTION_TYPE_UINT8ARRAY, RLP.encode(base)),
-    });
     return uint8ArrayConcat(TRANSACTION_TYPE_UINT8ARRAY, RLP.encode(base));
   }
 

@@ -21,7 +21,7 @@ describe("CeloTransactionTypesPlugin", () => {
   });
 
   describe("isValidFeeCurrency()", () => {
-    test("l1", async () => {
+    test("l1", () => {
       expect(web3.celo.isValidFeeCurrency("0x123")).resolves.toBe(false);
       expect(
         web3.celo.isValidFeeCurrency(
@@ -29,7 +29,7 @@ describe("CeloTransactionTypesPlugin", () => {
         )
       ).resolves.toBe(true);
     });
-    test("l2", async () => {
+    test("l2", () => {
       web3.setProvider(CeloChains.dango.rpcUrl);
       expect(web3.celo.isValidFeeCurrency("0x123")).resolves.toBe(false);
       expect(
