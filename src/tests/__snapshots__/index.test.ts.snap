@@ -18,8 +18,51 @@ CeloTransactionTypesPlugin {
     "wallet": [],
   },
   "_emitter": EventEmitter {
-    "_events": {},
-    "_eventsCount": 0,
+    "_events": {
+      "CONFIG_CHANGE": [
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+        EE {
+          "context": [Circular],
+          "fn": [Function],
+          "once": false,
+        },
+      ],
+    },
+    "_eventsCount": 1,
     "maxListeners": 9007199254740991,
   },
   "_requestManager": Web3RequestManager {
@@ -40,7 +83,7 @@ CeloTransactionTypesPlugin {
       "maxListeners": 9007199254740991,
     },
     "_provider": HttpProvider {
-      "clientUrl": "https://forno.celo.org",
+      "clientUrl": "https://alfajores-forno.celo-testnet.org",
       "httpProviderOptions": undefined,
     },
     "useRpcCallSpecification": undefined,
@@ -73,7 +116,7 @@ CeloTransactionTypesPlugin {
         "maxListeners": 9007199254740991,
       },
       "_provider": HttpProvider {
-        "clientUrl": "https://forno.celo.org",
+        "clientUrl": "https://alfajores-forno.celo-testnet.org",
         "httpProviderOptions": undefined,
       },
       "useRpcCallSpecification": undefined,

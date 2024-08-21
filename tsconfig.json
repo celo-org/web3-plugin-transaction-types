@@ -1,6 +1,7 @@
 {
   "extends": "@celo/typescript/tsconfig.library.json",
   "compilerOptions": {
+    "target": "ES2015",
     "rootDir": "src",
     "outDir": "lib",
     "declaration": true

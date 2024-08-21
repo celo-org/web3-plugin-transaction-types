@@ -12,6 +12,11 @@ exports[`CeloChains chains should be configured 1`] = `
     "explorerUrl": "https://celoscan.io",
     "rpcUrl": "https://forno.celo.org",
   },
+  "dango": {
+    "chainId": 44787,
+    "explorerUrl": "https://celo-dango.blockscout.com/",
+    "rpcUrl": "https://forno.dango.celo-testnet.org",
+  },
   "mainnet": {
     "chainId": 42220,
     "explorerUrl": "https://celoscan.io",
@@ -21,6 +26,11 @@ exports[`CeloChains chains should be configured 1`] = `
     "chainId": 44787,
     "explorerUrl": "https://alfajores.celoscan.io",
     "rpcUrl": "https://alfajores-forno.celo-testnet.org",
+  },
+  "testnetl2": {
+    "chainId": 44787,
+    "explorerUrl": "https://celo-dango.blockscout.com/",
+    "rpcUrl": "https://forno.dango.celo-testnet.org",
   },
 }
 `;
