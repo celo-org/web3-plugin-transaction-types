@@ -39,7 +39,7 @@ export const CeloChains = {
 export const PROXY_ADMIN_ADDRESS = "0x4200000000000000000000000000000000000018";
 export const REGISTRY_ADDRESS = "0x000000000000000000000000000000000000ce10";
 
-export const getContractAddress = async (
+export const getContractAddressFromRegistry = async (
   ctx: CeloTransactionTypesPlugin,
   contractName: string
 ) => {
@@ -70,7 +70,7 @@ export async function isWhitelisted(
 ) {
   const l2 = await isCel2(ctx);
 
-  const address = await getContractAddress(
+  const address = await getContractAddressFromRegistry(
     ctx,
     l2 ? "FeeCurrencyDirectory" : "FeeCurrencyWhitelist"
   );

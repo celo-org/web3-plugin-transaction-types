@@ -2,7 +2,12 @@
 import { Address, Web3Context, Web3PluginBase } from "web3";
 import { TransactionFactory } from "web3-eth-accounts";
 import { CIP64Transaction } from "./cip64";
-import { isWhitelisted, TxTypeToPrefix } from "./utils";
+import {
+  getContractAddressFromRegistry,
+  isCel2,
+  isWhitelisted,
+  TxTypeToPrefix,
+} from "./utils";
 import {
   type TransactionMiddlewareData,
   type TransactionMiddleware,
@@ -29,6 +34,14 @@ export class CeloTransactionTypesPlugin extends Web3PluginBase {
 
   public async isValidFeeCurrency(feeCurrency: Address) {
     return isWhitelisted(this, feeCurrency);
+  }
+
+  public async isCel2() {
+    return isCel2(this);
+  }
+
+  public async getCoreContractAddress(contractName: string) {
+    return getContractAddressFromRegistry(this, contractName);
   }
 
   public link(parentContext: Web3Context): void {

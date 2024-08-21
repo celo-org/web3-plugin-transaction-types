@@ -19,24 +19,3 @@ describe("CeloTransactionTypesPlugin", () => {
   test("should be registered under .celo namespace", () => {
     expect(web3.celo).toMatchSnapshot();
   });
-
-  describe("isValidFeeCurrency()", () => {
-    test("l1", () => {
-      expect(web3.celo.isValidFeeCurrency("0x123")).resolves.toBe(false);
-      expect(
-        web3.celo.isValidFeeCurrency(
-          "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
-        )
-      ).resolves.toBe(true);
-    });
-    test("l2", () => {
-      web3.setProvider(CeloChains.dango.rpcUrl);
-      expect(web3.celo.isValidFeeCurrency("0x123")).resolves.toBe(false);
-      expect(
-        web3.celo.isValidFeeCurrency(
-          "0x4822e58de6f5e485eF90df51C41CE01721331dC0"
-        )
-      ).resolves.toBe(true);
-    });
-  });
-});

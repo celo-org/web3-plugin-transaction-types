@@ -40,6 +40,13 @@ testWithAnvilL1("l1", (web3) => {
   describe("isCel2()", () => {
     expect(isCel2(plugin)).resolves.toBe(false);
   });
+
+  test("isWhitelisted()", () => {
+    expect(isWhitelisted(plugin, "0x123")).resolves.toBe(false);
+    expect(
+      isWhitelisted(plugin, "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1")
+    ).resolves.toBe(true);
+  });
 });
 
 testWithAnvilL2("l2", (web3) => {
@@ -56,5 +63,13 @@ testWithAnvilL2("l2", (web3) => {
 
   describe("isCel2()", () => {
     expect(isCel2(plugin)).resolves.toBe(false);
+  });
+
+  test("isWhitelisted", () => {
+    web3.setProvider(CeloChains.dango.rpcUrl);
+    expect(isWhitelisted(plugin, "0x123")).resolves.toBe(false);
+    expect(
+      isWhitelisted(plugin, "0x4822e58de6f5e485eF90df51C41CE01721331dC0")
+    ).resolves.toBe(true);
   });
 });
