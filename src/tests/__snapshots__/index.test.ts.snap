@@ -18,51 +18,8 @@ CeloTransactionTypesPlugin {
     "wallet": [],
   },
   "_emitter": EventEmitter {
-    "_events": {
-      "CONFIG_CHANGE": [
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-        EE {
-          "context": [Circular],
-          "fn": [Function],
-          "once": false,
-        },
-      ],
-    },
-    "_eventsCount": 1,
+    "_events": {},
+    "_eventsCount": 0,
     "maxListeners": 9007199254740991,
   },
   "_requestManager": Web3RequestManager {

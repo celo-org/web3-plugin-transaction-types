@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   CeloChains,
-  getContractAddress,
+  getContractAddressFromRegistry,
   isCel2,
   isWhitelisted,
   TxTypeToPrefix,
@@ -29,10 +29,10 @@ testWithAnvilL1("l1", (web3) => {
   const plugin = new CeloTransactionTypesPlugin();
   web3.registerPlugin(plugin);
 
-  describe("getContractAddress()", () => {
+  describe("getContractAddressFromRegistry()", () => {
     test("returns a contract address", async () => {
       expect(
-        getContractAddress(plugin, "FeeCurrencyWhitelist")
+        getContractAddressFromRegistry(plugin, "FeeCurrencyWhitelist")
       ).resolves.toMatch(/0x[0-9a-f]{40}/i);
     });
   });
@@ -44,7 +44,7 @@ testWithAnvilL1("l1", (web3) => {
   test("isWhitelisted()", () => {
     expect(isWhitelisted(plugin, "0x123")).resolves.toBe(false);
     expect(
-      isWhitelisted(plugin, "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1")
+      isWhitelisted(plugin, "0xc47bde654fEDA0d1dF4880f8BF00a5c650738586")
     ).resolves.toBe(true);
   });
 });
@@ -53,16 +53,16 @@ testWithAnvilL2("l2", (web3) => {
   const plugin = new CeloTransactionTypesPlugin();
   web3.registerPlugin(plugin);
 
-  describe("getContractAddress()", () => {
+  describe("getContractAddressFromRegistry()", () => {
     test("returns a contract address", async () => {
       expect(
-        getContractAddress(plugin, "FeeCurrencyDirectory")
+        getContractAddressFromRegistry(plugin, "FeeCurrencyDirectory")
       ).resolves.toMatch(/0x[0-9a-f]{40}/i);
     });
   });
 
   describe("isCel2()", () => {
-    expect(isCel2(plugin)).resolves.toBe(false);
+    expect(isCel2(plugin)).resolves.toBe(true);
   });
 
   test("isWhitelisted", () => {

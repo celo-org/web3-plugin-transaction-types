@@ -20,12 +20,15 @@
   "files": [
     "lib/**/*"
   ],
+  "exports": {
+    ".": "./lib/index.js"
+  },
   "peerDependencies": {
     "web3": ">= 4.0.2 < 5"
   },
   "devDependencies": {
     "@celo/dev-utils": "^0.0.5",
-    "@celo/devchain-anvil": "12.0.0-canary.0",
+    "@celo/devchain-anvil": "11.0.0-canary.0",
     "@celo/typescript": "^0.0.2",
     "@types/bun": "^1.1.6",
     "eslint": "^9.8.0",

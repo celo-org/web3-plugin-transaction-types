@@ -19,3 +19,4 @@ describe("CeloTransactionTypesPlugin", () => {
   test("should be registered under .celo namespace", () => {
     expect(web3.celo).toMatchSnapshot();
   });
+});
