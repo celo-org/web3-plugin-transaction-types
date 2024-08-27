@@ -44,3 +44,5 @@ exports[`Types tx types should be configured 1`] = `
   "ethereum-legacy": "",
 }
 `;
+
+exports[`l2 getContractAddressFromRegistry() throws if doesn't exists 1`] = `[Error: Contract not found with name FAKE CONTRACT NAME]`;

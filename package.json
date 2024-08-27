@@ -8,7 +8,7 @@
   "types": "./lib/index.d.ts",
   "sideEffects": false,
   "homepage": "https://docs.celo.org/developer/TODO",
-  "repository": "https://github.com/celo-org/developer-tooling/tree/master/packages/third-party/web3-plugin",
+  "repository": "https://github.com/celo-org/web3-plugin-transaction-types",
   "scripts": {
     "prepublishOnly": "bun run clean && bun run build",
     "build": "bun run tsc -b .",
@@ -30,6 +30,8 @@
     "@celo/dev-utils": "^0.0.5",
     "@celo/devchain-anvil": "11.0.0-canary.0",
     "@celo/typescript": "^0.0.2",
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.7",
     "@types/bun": "^1.1.6",
     "eslint": "^9.8.0",
     "eslint-plugin-jest": "^28.6.0",

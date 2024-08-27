@@ -33,7 +33,7 @@ testWithAnvilL1("l1", (web3) => {
     test("returns a contract address", async () => {
       expect(
         getContractAddressFromRegistry(plugin, "FeeCurrencyWhitelist")
-      ).resolves.toMatch(/0x[0-9a-f]{40}/i);
+      ).resolves.toMatch(/^0x[0-9a-f]{40}$/i);
     });
   });
 
@@ -57,7 +57,20 @@ testWithAnvilL2("l2", (web3) => {
     test("returns a contract address", async () => {
       expect(
         getContractAddressFromRegistry(plugin, "FeeCurrencyDirectory")
-      ).resolves.toMatch(/0x[0-9a-f]{40}/i);
+      ).resolves.toMatch(/^0x[0-9a-f]{40}$/i);
+    });
+    test("returns a non zero contract address", async () => {
+      const address = await getContractAddressFromRegistry(
+        plugin,
+        "StableTokenEUR"
+      );
+      expect(address).toMatch(/^0x[0-9a-f]{40}$/i);
+      expect(BigInt(address)).not.toEqual(0n);
+    });
+    test("throws if doesn't exists", async () => {
+      expect(
+        getContractAddressFromRegistry(plugin, "FAKE CONTRACT NAME")
+      ).rejects.toMatchSnapshot();
     });
   });
 

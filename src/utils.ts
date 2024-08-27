@@ -50,6 +50,9 @@ export const getContractAddressFromRegistry = async (
     .getAddressForString(contractName)
     .call();
 
+  if (BigInt(address) === BigInt(0)) {
+    throw new Error(`Contract not found with name ${contractName}`);
+  }
   return address;
 };
 

@@ -66,4 +66,7 @@ declare module "web3" {
   interface Web3Context {
     celo: CeloTransactionTypesPlugin;
   }
+  interface NonPayableCallOptions {
+    feeCurrency?: Address;
+  }
 }
