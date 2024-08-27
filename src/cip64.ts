@@ -162,12 +162,39 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     );
   }
   public constructor(txData: CIP64Data, opts: TxOptions = {}) {
+    const {
+      chainId,
+      accessList,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+      data,
+      value,
+      feeCurrency: _feeCurrency,
+    } = txData;
+
+    let feeCurrency: Address;
+
+    // NOTE: hack, we're storing the feeCurrency in value
+    // for contract calls
+    if (typeof value === "string" && value.match(/^0x[0-9a-f]{40}$/i)) {
+      feeCurrency = value as string;
+      txData.value = 0;
+    } else if (typeof data === "string") {
+      // NOTE: hack, we're storing the feeCurrency in data
+      // 42 = 0x + 40 (feeCurrency address)
+      feeCurrency = (data as string)?.slice(0, 42);
+      txData.data = `0x${(data as string).slice(42)}`;
+    } else {
+      // NOTE: We arrive here when called by `fromTxData` directly, all is good
+      feeCurrency = _feeCurrency;
+    }
+
     super({ ...txData, type: TxTypeToPrefix.cip64 }, opts);
-    const { chainId, accessList, maxFeePerGas, maxPriorityFeePerGas } = txData;
 
     this.common = this._getCommon(opts.common, chainId);
     this.chainId = this.common.chainId();
-    this.feeCurrency = txData.feeCurrency;
+
+    this.feeCurrency = feeCurrency;
 
     // Populate the access list fields
     const accessListData = getAccessListData(accessList ?? []);
@@ -175,9 +202,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     this.AccessListJSON = accessListData.AccessListJSON;
     // Verify the access list format.
     verifyAccessList(this.accessList);
-
-    // TODO: whitelist
-    // verifyFeeCurrency(this.feeCurrency);
 
     this.maxFeePerGas = uint8ArrayToBigInt(
       toUint8Array(maxFeePerGas === "" ? "0x" : maxFeePerGas)
@@ -217,7 +241,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
   }
 
   public getDataFee(): bigint {
-    // TODO adjust for feeCurrency
     if (
       this.cache.dataFee &&
       this.cache.dataFee.hardfork === this.common.hardfork()
@@ -239,7 +262,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
   }
 
   public getUpfrontCost(baseFee = BigInt(0)): bigint {
-    // TODO adjust for feeCurrency
     const prio = this.maxPriorityFeePerGas;
     const maxBase = this.maxFeePerGas - baseFee;
     const inclusionFeePerGas = prio < maxBase ? prio : maxBase;
@@ -256,9 +278,9 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
       bigIntToUnpaddedUint8Array(this.gasLimit),
       this.to !== undefined ? this.to.buf : Uint8Array.from([]),
       bigIntToUnpaddedUint8Array(this.value),
-      this.data,
+      bytesToHex(this.feeCurrency),
       this.accessList,
-      unpadUint8Array(hexToBytes(this.feeCurrency)),
+      hexToBytes(this.feeCurrency),
       this.v !== undefined
         ? bigIntToUnpaddedUint8Array(this.v)
         : Uint8Array.from([]),
