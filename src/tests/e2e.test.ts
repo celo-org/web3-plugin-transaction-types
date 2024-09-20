@@ -29,13 +29,19 @@ web3.eth.accounts.wallet?.add(account);
 beforeAll(async () => {
   web3.registerPlugin(new CeloTransactionTypesPlugin());
   web3.celo.link(web3);
+
+  // NOTE: This is a hack I think, whenever we use web3.eth.sendTransaction
+  // it looses the celo context and can't serialize cip64 txs
+  web3.eth.config.customTransactionSchema =
+    web3.celo.config.customTransactionSchema;
+
   stableAddress = await web3.celo.getCoreContractAddress("StableTokenEUR");
   stable = new CeloContract(stableTokenEurABI, stableAddress, web3);
 
   web3.eth.defaultAccount = account.address;
 });
 
-test.only(
+test(
   "can do a transaction",
   async () => {
     const amount = BigInt(10);
@@ -77,13 +83,13 @@ test(
     const nativeBalanceBefore = BigInt(
       await web3.eth.getBalance(account.address)
     );
-
     const txData = {
       from: web3.eth.defaultAccount,
       to: account2.address,
       value: amount,
       feeCurrency: stableAddress,
     };
+    await web3.celo.populateTransaction(txData);
     const tx = await web3.eth.sendTransaction(txData);
     const stableBalanceSenderAfter = BigInt(
       await stable.methods.balanceOf(account.address).call()
@@ -93,7 +99,6 @@ test(
     );
 
     expect(tx.transactionHash).toMatch(/^0x[0-9a-f]{64}$/i);
-    console.log({ tx });
     expect(stableBalanceSenderAfter).toBeLessThan(stableBalanceSenderBefore);
     expect(nativeBalanceBefore).toEqual(nativeBalanceAfter + amount);
   },

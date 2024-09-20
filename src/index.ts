@@ -4,6 +4,8 @@ import {
   Contract,
   ContractAbi,
   HexString,
+  Numbers,
+  Transaction,
   Web3Context,
   Web3PluginBase,
 } from "web3";
@@ -13,6 +15,7 @@ import {
   getContractAddressFromRegistry,
   isCel2,
   isWhitelisted,
+  safeTxForRpc,
   TxTypeToPrefix,
 } from "./utils";
 import {
@@ -20,8 +23,7 @@ import {
   type TransactionMiddleware,
 } from "web3/src/eth.exports";
 import { type TransactionBuilder } from "web3-core";
-import { transactionBuilder } from "web3-eth";
-import { bytesToHex, hexToBytes, uint8ArrayConcat } from "web3-utils";
+import { transactionBuilder, transactionSchema } from "web3-eth";
 
 export class CeloTransactionTypesPlugin extends Web3PluginBase {
   public static TX_TYPE = BigInt(parseInt(TxTypeToPrefix.cip64));
@@ -45,6 +47,72 @@ export class CeloTransactionTypesPlugin extends Web3PluginBase {
 
   public async getCoreContractAddress(contractName: string) {
     return getContractAddressFromRegistry(this, contractName);
+  }
+
+  public async populateTransaction(tx: Transaction) {
+    const { feeCurrency } = tx;
+
+    const promises: Promise<[string, Numbers]>[] = [];
+    if (!tx.nonce) {
+      promises.push(
+        this.requestManager
+          .send({
+            method: "eth_getTransactionCount",
+            params: [tx.from, "latest"],
+          })
+          .then((x) => ["nonce", x])
+      );
+    }
+    if (!tx.chainId) {
+      promises.push(
+        this.requestManager
+          .send({
+            method: "eth_chainId",
+            params: [],
+          })
+          .then((x) => ["chainId", x])
+      );
+    }
+    if (!tx.maxPriorityFeePerGas) {
+      promises.push(
+        this.requestManager
+          .send({
+            method: "eth_maxPriorityFeePerGas",
+            params: feeCurrency ? [feeCurrency] : [],
+          })
+          .then((x: HexString) => ["maxPriorityFeePerGas", BigInt(x)])
+      );
+    }
+    if (!tx.maxFeePerGas) {
+      promises.push(
+        this.requestManager
+          .send({
+            method: "eth_gasPrice",
+            params: feeCurrency ? [feeCurrency] : [],
+          })
+          .then((x: HexString) => ["maxFeePerGas", BigInt(x)])
+      );
+    }
+
+    (await Promise.all(promises)).forEach(([key, value]) => {
+      // @ts-expect-error
+      tx[key] = value;
+    });
+
+    const gas = await this.requestManager.send({
+      method: "eth_estimateGas",
+      params: [
+        {
+          ...safeTxForRpc(tx),
+          gas: undefined,
+        },
+        "latest",
+      ],
+    });
+    // TODO: add note for inflation factor
+    tx.gas = (BigInt(gas) * BigInt(130)) / BigInt(100);
+
+    return safeTxForRpc(tx);
   }
 
   public link(parentContext: Web3Context): void {
@@ -89,117 +157,26 @@ export class CeloContract<Abi extends ContractAbi> extends Contract<Abi> {
   }
 }
 
+type CeloTransaction = Transaction & {
+  feeCurrency?: HexString;
+};
+
 class CeloTxMiddleware implements TransactionMiddleware {
   constructor(private ctx: Web3Context) {
-    const celoTransactionBuilder = (async (options) => {
-      const {
-        transaction: { value, type, data, ...transaction },
-      } = options;
-
-      // NOTE: hack, we're storing the feeCurrency in value
-      // for contract calls
-      const valueAsFeeCurrencyForContractCalls =
-        typeof value === "string" && value.match(/^0x[0-9a-f]{40}$/i);
-      const isCip64 =
-        valueAsFeeCurrencyForContractCalls ||
-        (type && BigInt(type as string) === CeloTransactionTypesPlugin.TX_TYPE);
-
-      // NOTE: hack, we're storing the feeCurrency in data
-      // 42 = 0x + 40 (feeCurrency address)
-      const feeCurrency = isCip64
-        ? valueAsFeeCurrencyForContractCalls
-          ? (value as string)
-          : (data as string).slice(0, 42)
-        : undefined;
-      const _data =
-        isCip64 && !valueAsFeeCurrencyForContractCalls
-          ? (data as string).slice(42)
-          : data;
-
-      console.log("here!", {
-        value,
-        data,
-        valueAsFeeCurrencyForContractCalls,
-        isCip64,
-        feeCurrency,
-        _data,
-      });
-      // NOTE: small hack
-      this.ctx.transactionBuilder = undefined;
-
-      const tx = await transactionBuilder({
-        ...options,
-        transaction: {
-          ...transaction,
-          value: valueAsFeeCurrencyForContractCalls ? undefined : value,
-          type,
-          data: _data,
-        },
-      });
-      this.ctx.transactionBuilder = celoTransactionBuilder;
-      // NOTE: end hack
-
-      if (!isCip64) {
-        return tx;
-      }
-
-      if (!(await this.ctx.celo.isValidFeeCurrency(feeCurrency!))) {
-        throw new Error(`${feeCurrency} is not a whitelisted feeCurrency`);
-      }
-      tx.type = CeloTransactionTypesPlugin.TX_TYPE;
-      tx.feeCurrency = feeCurrency;
-
-      if (!tx.maxPriorityFeePerGas) {
-        const rpcResult = (await options.web3Context.requestManager.send({
-          method: "eth_maxPriorityFeePerGas",
-          params: [feeCurrency],
-        })) as HexString;
-        tx.maxPriorityFeePerGas = rpcResult;
-      }
-      if (!tx.maxFeePerGas) {
-        const rpcResult = (await options.web3Context.requestManager.send({
-          method: "eth_gasPrice",
-          params: [feeCurrency],
-        })) as HexString;
-        tx.maxFeePerGas = rpcResult;
-      }
-      tx.data = data;
-
-      const gas = await options.web3Context.requestManager.send({
-        method: "eth_estimateGas",
-        params: [
-          {
-            ...transaction,
-            value: valueAsFeeCurrencyForContractCalls ? undefined : value,
-            type,
-            data: _data,
-            nonce: tx.nonce,
-            chainId: tx.chainId,
-            networkId: tx.networkId,
-            feeCurrency,
-            maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
-            maxFeePerGas: tx.maxFeePerGas,
-          },
-          "latest",
-        ],
-      });
-      tx.gas = (BigInt(gas) * BigInt(130)) / BigInt(100);
-
-      if (valueAsFeeCurrencyForContractCalls) {
-        tx.value = feeCurrency;
-      }
-
-      return tx;
-    }) as TransactionBuilder;
-
-    this.ctx.transactionBuilder = celoTransactionBuilder;
+    this.ctx.config.customTransactionSchema = {
+      ...transactionSchema,
+      properties: {
+        ...transactionSchema.properties,
+        feeCurrency: { format: "address" },
+      },
+    };
+    this.ctx.transactionBuilder = this.transactionBuilder as TransactionBuilder;
   }
+
   public async processTransaction(
     transaction: TransactionMiddlewareData
   ): Promise<TransactionMiddlewareData> {
-    console.log("HELLO!", transaction);
     const { feeCurrency, gasPrice } = transaction;
-    // Not CELO specific
     if (!feeCurrency) {
       return transaction;
     }
@@ -210,25 +187,39 @@ class CeloTxMiddleware implements TransactionMiddleware {
     const tx = { ...transaction };
     tx.type = CeloTransactionTypesPlugin.TX_TYPE;
 
-    if (tx.data) {
-      // NOTE: hack, we're storing the feeCurrency in value
-      // for contract calls
-      if (!tx.value) {
-        tx.value = feeCurrency;
-      } else {
-        // NOTE: hack, we're storing the feeCurrency in data
-        tx.data = uint8ArrayConcat(
-          hexToBytes(feeCurrency),
-          typeof tx.data === "string" ? hexToBytes(tx.data) : tx.data
-        );
-      }
-    } else {
-      // NOTE: hack, we're storing the feeCurrency in data
-      tx.data = hexToBytes(feeCurrency);
-    }
-
     return tx;
   }
+
+  private transactionBuilder = async (
+    options: Parameters<TransactionBuilder>[0]
+  ) => {
+    const { transaction } = options;
+
+    // NOTE: small hack:
+    // `transactionBuilder` calls this.ctx.transactionBuilder if defined
+    this.ctx.transactionBuilder = undefined;
+    const tx: CeloTransaction = await transactionBuilder({
+      ...options,
+      transaction: transaction,
+    });
+    tx.feeCurrency = transaction.feeCurrency;
+
+    this.ctx.transactionBuilder = this.transactionBuilder as TransactionBuilder;
+    // NOTE: end hack
+
+    const { feeCurrency } = tx;
+    if (!feeCurrency || feeCurrency === "0x") {
+      return transaction;
+    }
+
+    if (!(await this.ctx.celo.isValidFeeCurrency(feeCurrency!))) {
+      throw new Error(`${feeCurrency} is not a whitelisted feeCurrency`);
+    }
+
+    await this.ctx.celo.populateTransaction(tx);
+
+    return tx;
+  };
 }
 
 declare module "web3" {

@@ -167,27 +167,8 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
       accessList,
       maxFeePerGas,
       maxPriorityFeePerGas,
-      data,
-      value,
-      feeCurrency: _feeCurrency,
+      feeCurrency,
     } = txData;
-
-    let feeCurrency: Address;
-
-    // NOTE: hack, we're storing the feeCurrency in value
-    // for contract calls
-    if (typeof value === "string" && value.match(/^0x[0-9a-f]{40}$/i)) {
-      feeCurrency = value as string;
-      txData.value = 0;
-    } else if (typeof data === "string") {
-      // NOTE: hack, we're storing the feeCurrency in data
-      // 42 = 0x + 40 (feeCurrency address)
-      feeCurrency = (data as string)?.slice(0, 42);
-      txData.data = `0x${(data as string).slice(42)}`;
-    } else {
-      // NOTE: We arrive here when called by `fromTxData` directly, all is good
-      feeCurrency = _feeCurrency;
-    }
 
     super({ ...txData, type: TxTypeToPrefix.cip64 }, opts);
 

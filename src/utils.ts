@@ -1,6 +1,6 @@
 import { registryABI, feeCurrencyWhitelistABI } from "@celo/abis";
 import { feeCurrencyDirectoryABI } from "@celo/abis-l2";
-import Web3, { Address, Contract } from "web3";
+import Web3, { Address, Contract, Transaction } from "web3";
 import { CeloTransactionTypesPlugin } from ".";
 
 export enum TxTypeToPrefix {
@@ -91,4 +91,16 @@ export async function isWhitelisted(
   return whitelist
     .map((x) => x.toLowerCase())
     .includes(feeCurrency.toLowerCase());
+}
+
+export function safeTxForRpc<T extends Transaction>(transaction: T): T {
+  const tx = { ...transaction };
+  const entries = Object.entries(transaction) as [keyof T, any][];
+  for (const [key, value] of entries) {
+    if (typeof value === "bigint" || typeof value === "number") {
+      // @ts-expect-error
+      tx[key] = `0x${value.toString(16)}`;
+    }
+  }
+  return tx;
 }
