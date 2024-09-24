@@ -259,7 +259,7 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
       bigIntToUnpaddedUint8Array(this.gasLimit),
       this.to !== undefined ? this.to.buf : Uint8Array.from([]),
       bigIntToUnpaddedUint8Array(this.value),
-      bytesToHex(this.feeCurrency),
+      this.data,
       this.accessList,
       hexToBytes(this.feeCurrency),
       this.v !== undefined
