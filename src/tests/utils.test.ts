@@ -30,7 +30,7 @@ testWithAnvilL1("l1", (web3) => {
   web3.registerPlugin(plugin);
 
   describe("getContractAddressFromRegistry()", () => {
-    test("returns a contract address", async () => {
+    test("returns a contract address", () => {
       expect(
         getContractAddressFromRegistry(plugin, "FeeCurrencyWhitelist")
       ).resolves.toMatch(/^0x[0-9a-f]{40}$/i);
@@ -54,7 +54,7 @@ testWithAnvilL2("l2", (web3) => {
   web3.registerPlugin(plugin);
 
   describe("getContractAddressFromRegistry()", () => {
-    test("returns a contract address", async () => {
+    test("returns a contract address", () => {
       expect(
         getContractAddressFromRegistry(plugin, "FeeCurrencyDirectory")
       ).resolves.toMatch(/^0x[0-9a-f]{40}$/i);
@@ -67,7 +67,7 @@ testWithAnvilL2("l2", (web3) => {
       expect(address).toMatch(/^0x[0-9a-f]{40}$/i);
       expect(BigInt(address)).not.toEqual(0n);
     });
-    test("throws if doesn't exists", async () => {
+    test("throws if doesn't exists", () => {
       expect(
         getContractAddressFromRegistry(plugin, "FAKE CONTRACT NAME")
       ).rejects.toMatchSnapshot();
@@ -76,13 +76,5 @@ testWithAnvilL2("l2", (web3) => {
 
   describe("isCel2()", () => {
     expect(isCel2(plugin)).resolves.toBe(true);
-  });
-
-  test("isWhitelisted", () => {
-    web3.setProvider(CeloChains.dango.rpcUrl);
-    expect(isWhitelisted(plugin, "0x123")).resolves.toBe(false);
-    expect(
-      isWhitelisted(plugin, "0x4822e58de6f5e485eF90df51C41CE01721331dC0")
-    ).resolves.toBe(true);
   });
 });

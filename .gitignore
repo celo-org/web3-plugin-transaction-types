@@ -2,5 +2,5 @@
 !.eslintrc.js
 !jest.config.js
 lib
-*.tsbuildinfo.env
+*.tsbuildinfo*
 .env

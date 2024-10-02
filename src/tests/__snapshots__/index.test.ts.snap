@@ -20,7 +20,7 @@ CeloTransactionTypesPlugin {
   "_emitter": EventEmitter {
     "_events": {},
     "_eventsCount": 0,
-    "maxListeners": 9007199254740991,
+    "maxListeners": 100,
   },
   "_requestManager": Web3RequestManager {
     "_emitter": EventEmitter {
@@ -84,6 +84,173 @@ CeloTransactionTypesPlugin {
   "config": {
     "blockHeaderTimeout": 10,
     "contractDataInputFill": "data",
+    "customTransactionSchema": {
+      "properties": {
+        "accessList": {
+          "items": {
+            "properties": {
+              "address": {
+                "format": "address",
+              },
+              "storageKeys": {
+                "items": {
+                  "format": "bytes32",
+                },
+                "type": "array",
+              },
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "chain": {
+          "enum": [
+            "goerli",
+            "kovan",
+            "mainnet",
+            "rinkeby",
+            "ropsten",
+            "sepolia",
+          ],
+          "type": "string",
+        },
+        "chainId": {
+          "format": "uint",
+        },
+        "common": {
+          "properties": {
+            "baseChain": {
+              "enum": [
+                "goerli",
+                "kovan",
+                "mainnet",
+                "rinkeby",
+                "ropsten",
+                "sepolia",
+              ],
+              "type": "string",
+            },
+            "customChain": {
+              "properties": {
+                "chainId": {
+                  "format": "uint",
+                },
+                "name": {
+                  "format": "string",
+                },
+                "networkId": {
+                  "format": "uint",
+                },
+              },
+              "type": "object",
+            },
+            "hardfork": {
+              "enum": [
+                "arrowGlacier",
+                "berlin",
+                "byzantium",
+                "chainstart",
+                "constantinople",
+                "dao",
+                "homestead",
+                "istanbul",
+                "london",
+                "merge",
+                "muirGlacier",
+                "petersburg",
+                "shanghai",
+                "spuriousDragon",
+                "tangerineWhistle",
+              ],
+              "type": "string",
+            },
+          },
+          "type": "object",
+        },
+        "data": {
+          "format": "bytes",
+        },
+        "effectiveGasPrice": {
+          "format": "uint",
+        },
+        "feeCurrency": {
+          "format": "address",
+        },
+        "from": {
+          "format": "address",
+        },
+        "gas": {
+          "format": "uint",
+        },
+        "gasLimit": {
+          "format": "uint",
+        },
+        "gasPrice": {
+          "format": "uint",
+        },
+        "hardfork": {
+          "enum": [
+            "arrowGlacier",
+            "berlin",
+            "byzantium",
+            "chainstart",
+            "constantinople",
+            "dao",
+            "homestead",
+            "istanbul",
+            "london",
+            "merge",
+            "muirGlacier",
+            "petersburg",
+            "shanghai",
+            "spuriousDragon",
+            "tangerineWhistle",
+          ],
+          "type": "string",
+        },
+        "input": {
+          "format": "bytes",
+        },
+        "maxFeePerGas": {
+          "format": "uint",
+        },
+        "maxPriorityFeePerGas": {
+          "format": "uint",
+        },
+        "networkId": {
+          "format": "uint",
+        },
+        "nonce": {
+          "format": "uint",
+        },
+        "r": {
+          "format": "bytes32",
+        },
+        "s": {
+          "format": "bytes32",
+        },
+        "to": {
+          "oneOf": [
+            {
+              "format": "address",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "type": {
+          "format": "uint",
+        },
+        "v": {
+          "format": "uint",
+        },
+        "value": {
+          "format": "uint",
+        },
+      },
+      "type": "object",
+    },
     "defaultAccount": undefined,
     "defaultBlock": "latest",
     "defaultChain": "mainnet",
@@ -103,7 +270,7 @@ CeloTransactionTypesPlugin {
     "handleRevert": false,
     "maxListenersWarningThreshold": 100,
     "transactionBlockTimeout": 50,
-    "transactionBuilder": undefined,
+    "transactionBuilder": [Function: AsyncFunction],
     "transactionConfirmationBlocks": 24,
     "transactionConfirmationPollingInterval": undefined,
     "transactionPollingInterval": 1000,

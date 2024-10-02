@@ -17,7 +17,6 @@ import {
   toUint8Array,
   txUtils,
   uint8ArrayToBigInt,
-  unpadUint8Array,
 } from "web3-eth-accounts";
 import {
   bytesToHex,
@@ -162,12 +161,20 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     );
   }
   public constructor(txData: CIP64Data, opts: TxOptions = {}) {
+    const {
+      chainId,
+      accessList,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
+      feeCurrency,
+    } = txData;
+
     super({ ...txData, type: TxTypeToPrefix.cip64 }, opts);
-    const { chainId, accessList, maxFeePerGas, maxPriorityFeePerGas } = txData;
 
     this.common = this._getCommon(opts.common, chainId);
     this.chainId = this.common.chainId();
-    this.feeCurrency = txData.feeCurrency;
+
+    this.feeCurrency = feeCurrency;
 
     // Populate the access list fields
     const accessListData = getAccessListData(accessList ?? []);
@@ -175,9 +182,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
     this.AccessListJSON = accessListData.AccessListJSON;
     // Verify the access list format.
     verifyAccessList(this.accessList);
-
-    // TODO: whitelist
-    // verifyFeeCurrency(this.feeCurrency);
 
     this.maxFeePerGas = uint8ArrayToBigInt(
       toUint8Array(maxFeePerGas === "" ? "0x" : maxFeePerGas)
@@ -217,7 +221,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
   }
 
   public getDataFee(): bigint {
-    // TODO adjust for feeCurrency
     if (
       this.cache.dataFee &&
       this.cache.dataFee.hardfork === this.common.hardfork()
@@ -239,7 +242,6 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
   }
 
   public getUpfrontCost(baseFee = BigInt(0)): bigint {
-    // TODO adjust for feeCurrency
     const prio = this.maxPriorityFeePerGas;
     const maxBase = this.maxFeePerGas - baseFee;
     const inclusionFeePerGas = prio < maxBase ? prio : maxBase;
@@ -258,7 +260,7 @@ export class CIP64Transaction extends BaseTransaction<CIP64Transaction> {
       bigIntToUnpaddedUint8Array(this.value),
       this.data,
       this.accessList,
-      unpadUint8Array(hexToBytes(this.feeCurrency)),
+      hexToBytes(this.feeCurrency),
       this.v !== undefined
         ? bigIntToUnpaddedUint8Array(this.v)
         : Uint8Array.from([]),

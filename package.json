@@ -24,7 +24,7 @@
     ".": "./lib/index.js"
   },
   "peerDependencies": {
-    "web3": ">= 4.0.2 < 5"
+    "web3": ">= 4.13.1 < 5"
   },
   "devDependencies": {
     "@celo/dev-utils": "^0.0.5",
@@ -37,13 +37,16 @@
     "eslint-plugin-jest": "^28.6.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^7.17.0",
-    "web3": "^4.11.1"
+    "web3": "4.13.1-dev.cc99825.0"
   },
   "dependencies": {
     "@celo/abis": "^11.0.0",
     "@celo/abis-l2": "npm:@celo/abis@12.0.0-canary.23",
-    "web3-eth-accounts": "^4.1.3",
-    "web3-utils": "^4.3.1"
+    "web3-eth-accounts": "4.2.2-dev.cc99825.0",
+    "web3-utils": "4.3.2-dev.cc99825.0"
+  },
+  "resolutions": {
+    "web3-eth": "4.9.1-dev.cc99825.0"
   },
   "patchedDependencies": {
     "@celo/dev-utils@0.0.5": "patches/@celo%2Fdev-utils@0.0.5.patch"

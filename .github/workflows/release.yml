@@ -1,0 +1,45 @@
+name: Release Packages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - "prerelease/*"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Prepare or Publish
+    runs-on: ["self-hosted", "org", "npm-publish"]
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+      repository-projects: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: docker://us-west1-docker.pkg.dev/devopsre/akeyless-public/akeyless-action:latest
+        with:
+          api-url: https://api.gateway.akeyless.celo-networks-dev.org
+          access-id: p-kf9vjzruht6l
+          static-secrets: '{"/static-secrets/NPM/npm-publish-token":"NPM_TOKEN"}'
+
+      - run: bun install
+      - run: rm -rf node_modules/@celo/dev-utils/node_modules
+
+      - uses: changesets/action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ env.NPM_TOKEN }}
+        with:
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: bun run prepublishOnly
+          version: |
+            bun x changeset version &&
+            bun install &&
+            rm -rf node_modules/@celo/dev-utils/node_modules
