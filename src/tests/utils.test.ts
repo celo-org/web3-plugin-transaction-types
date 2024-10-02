@@ -30,22 +30,22 @@ testWithAnvilL1("l1", (web3) => {
   web3.registerPlugin(plugin);
 
   describe("getContractAddressFromRegistry()", () => {
-    test("returns a contract address", async () => {
+    test("returns a contract address", () => {
       expect(
-        await getContractAddressFromRegistry(plugin, "FeeCurrencyWhitelist")
-      ).toMatch(/^0x[0-9a-f]{40}$/i);
+        getContractAddressFromRegistry(plugin, "FeeCurrencyWhitelist")
+      ).resolves.toMatch(/^0x[0-9a-f]{40}$/i);
     });
   });
 
-  describe("isCel2()", async () => {
-    expect(await isCel2(plugin)).toBe(false);
+  describe("isCel2()", () => {
+    expect(isCel2(plugin)).resolves.toBe(false);
   });
 
-  test("isWhitelisted()", async () => {
-    expect(await isWhitelisted(plugin, "0x123")).toBe(false);
+  test("isWhitelisted()", () => {
+    expect(isWhitelisted(plugin, "0x123")).resolves.toBe(false);
     expect(
-      await isWhitelisted(plugin, "0xc47bde654fEDA0d1dF4880f8BF00a5c650738586")
-    ).toBe(true);
+      isWhitelisted(plugin, "0xc47bde654fEDA0d1dF4880f8BF00a5c650738586")
+    ).resolves.toBe(true);
   });
 });
 
@@ -54,10 +54,10 @@ testWithAnvilL2("l2", (web3) => {
   web3.registerPlugin(plugin);
 
   describe("getContractAddressFromRegistry()", () => {
-    test("returns a contract address", async () => {
+    test("returns a contract address", () => {
       expect(
-        await getContractAddressFromRegistry(plugin, "FeeCurrencyDirectory")
-      ).toMatch(/^0x[0-9a-f]{40}$/i);
+        getContractAddressFromRegistry(plugin, "FeeCurrencyDirectory")
+      ).resolves.toMatch(/^0x[0-9a-f]{40}$/i);
     });
     test("returns a non zero contract address", async () => {
       const address = await getContractAddressFromRegistry(
@@ -74,15 +74,7 @@ testWithAnvilL2("l2", (web3) => {
     });
   });
 
-  describe("isCel2()", async () => {
-    expect(await isCel2(plugin)).toBe(true);
-  });
-
-  test("isWhitelisted", async () => {
-    web3.setProvider(CeloChains.dango.rpcUrl);
-    expect(await isWhitelisted(plugin, "0x123")).toBe(false);
-    expect(
-      await isWhitelisted(plugin, "0x4822e58de6f5e485eF90df51C41CE01721331dC0")
-    ).toBe(true);
+  describe("isCel2()", () => {
+    expect(isCel2(plugin)).resolves.toBe(true);
   });
 });

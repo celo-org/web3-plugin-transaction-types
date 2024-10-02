@@ -1,22 +1,26 @@
-import { beforeAll, expect, test } from "bun:test";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test,
+} from "bun:test";
 import { CeloContract, CeloTransactionTypesPlugin } from "..";
 import Web3, { Address } from "web3";
 import { stableTokenEurABI } from "@celo/abis";
-import { CeloChains } from "../utils";
+import { CeloChains, isWhitelisted } from "../utils";
 
 let stable: CeloContract<typeof stableTokenEurABI>;
 let stableAddress: Address;
 
 const web3 = new Web3(CeloChains.alfajores.rpcUrl);
-console.log(process.env.TEST_ACCOUNT_1!.slice(5));
-console.log(process.env.TEST_ACCOUNT_2!.slice(5));
 const account = web3.eth.accounts.privateKeyToAccount(
   process.env.TEST_ACCOUNT_1 as string
 );
 const account2 = web3.eth.accounts.privateKeyToAccount(
   process.env.TEST_ACCOUNT_2 as string
 );
-
 web3.eth.accounts.wallet?.add(account);
 
 beforeAll(async () => {
@@ -97,3 +101,17 @@ test(
   },
   { timeout: 10_000 }
 );
+
+describe("dango", () => {
+  const _web3 = new Web3(CeloChains.dango.rpcUrl);
+  _web3.registerPlugin(new CeloTransactionTypesPlugin());
+
+  test("isWhitelisted", () => {
+    expect(_web3.celo.isValidFeeCurrency("0x123")).resolves.toBe(false);
+    expect(
+      _web3.celo.isValidFeeCurrency(
+        "0x4822e58de6f5e485eF90df51C41CE01721331dC0"
+      )
+    ).resolves.toBe(true);
+  });
+});
