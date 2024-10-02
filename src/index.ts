@@ -31,8 +31,9 @@ export class CeloTransactionTypesPlugin extends Web3PluginBase {
   public constructor() {
     super();
 
+    console.log();
     TransactionFactory.registerTransactionType(
-      CeloTransactionTypesPlugin.TX_TYPE,
+      `0x${CeloTransactionTypesPlugin.TX_TYPE.toString(16)}`,
       CIP64Transaction
     );
   }
@@ -176,7 +177,9 @@ class CeloTxMiddleware implements TransactionMiddleware {
   public async processTransaction(
     transaction: TransactionMiddlewareData
   ): Promise<TransactionMiddlewareData> {
-    const { feeCurrency, gasPrice } = transaction;
+    const { feeCurrency, gasPrice } =
+      transaction as TransactionMiddlewareData & { feeCurrency?: HexString };
+
     if (!feeCurrency) {
       return transaction;
     }
@@ -198,6 +201,7 @@ class CeloTxMiddleware implements TransactionMiddleware {
     // NOTE: small hack:
     // `transactionBuilder` calls this.ctx.transactionBuilder if defined
     this.ctx.transactionBuilder = undefined;
+    // @ts-expect-error
     const tx: CeloTransaction = await transactionBuilder({
       ...options,
       transaction: transaction,

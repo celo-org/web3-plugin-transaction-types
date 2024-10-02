@@ -17,7 +17,6 @@ import {
   toUint8Array,
   txUtils,
   uint8ArrayToBigInt,
-  unpadUint8Array,
 } from "web3-eth-accounts";
 import {
   bytesToHex,
