@@ -1,29 +1,22 @@
-import { testWithAnvilL1 } from "@celo/dev-utils/lib/anvil-test";
 import { beforeAll, expect, test } from "bun:test";
 import { CeloContract, CeloTransactionTypesPlugin } from "..";
-import Web3, {
-  Address,
-  Contract,
-  DataFormat,
-  FMT_BYTES,
-  FMT_NUMBER,
-} from "web3";
+import Web3, { Address } from "web3";
 import { stableTokenEurABI } from "@celo/abis";
-import { hexToBytes, toWei } from "web3-utils";
-import { CeloChains, TxTypeToPrefix } from "../utils";
-import { waitForTransactionReceipt } from "web3-eth";
-import { CIP64Transaction } from "../cip64";
+import { CeloChains } from "../utils";
 
 let stable: CeloContract<typeof stableTokenEurABI>;
 let stableAddress: Address;
 
 const web3 = new Web3(CeloChains.alfajores.rpcUrl);
+console.log(process.env.TEST_ACCOUNT_1!.slice(5));
+console.log(process.env.TEST_ACCOUNT_2!.slice(5));
 const account = web3.eth.accounts.privateKeyToAccount(
   process.env.TEST_ACCOUNT_1 as string
 );
 const account2 = web3.eth.accounts.privateKeyToAccount(
   process.env.TEST_ACCOUNT_2 as string
 );
+
 web3.eth.accounts.wallet?.add(account);
 
 beforeAll(async () => {
