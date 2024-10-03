@@ -4,3 +4,6 @@
 lib
 *.tsbuildinfo*
 .env
+.envnode_modules
+node_modules
+coverage
