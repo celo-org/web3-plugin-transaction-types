@@ -31,25 +31,46 @@ export class CeloTransactionTypesPlugin extends Web3PluginBase {
   public constructor() {
     super();
 
-    console.log();
     TransactionFactory.registerTransactionType(
       `0x${CeloTransactionTypesPlugin.TX_TYPE.toString(16)}`,
       CIP64Transaction
     );
   }
 
+  /**
+   *
+   * @param feeCurrency the address to verify
+   * @returns if the passed `feeCurrency` is a whitelisted address
+   *          that can be used as a feeCurrency
+   */
   public async isValidFeeCurrency(feeCurrency: Address) {
     return isWhitelisted(this, feeCurrency);
   }
 
+  /**
+   *
+   * @returns if the network is a L2 or not
+   */
   public async isCel2() {
     return isCel2(this);
   }
 
+  /**
+   *
+   * @param contractName See https://docs.celo.org/contract-addresses
+   * @returns the correct address for a given core contract name
+   *          depending on the network (mainnet, alfajores, baklava, dango, etc.)
+   */
   public async getCoreContractAddress(contractName: string) {
     return getContractAddressFromRegistry(this, contractName);
   }
 
+  /**
+   *
+   * @param tx a standard web3 transaction
+   * @returns the same tx with the `nonce`, `chainId`, `maxPriorityFeePerGas`, `maxFeePerGas`, and `gas`
+   *          filled, taking in account if `feeCurrency` is present or not.
+   */
   public async populateTransaction(tx: Transaction) {
     const { feeCurrency } = tx;
 
@@ -116,11 +137,20 @@ export class CeloTransactionTypesPlugin extends Web3PluginBase {
     return safeTxForRpc(tx);
   }
 
+  /**
+   *
+   * DO NOT USE
+   *
+   * This function isn't meant to be used manually, it's automatically called by
+   * web3.registerPlugin.
+   */
   public link(parentContext: Web3Context): void {
-    (parentContext as any).Web3Eth.setTransactionMiddleware(
-      new CeloTxMiddleware(parentContext)
-    );
+    const middleware = new CeloTxMiddleware(parentContext);
+    (parentContext as any).Web3Eth.setTransactionMiddleware(middleware);
+
     super.link(parentContext);
+    (parentContext as any).eth.config.customTransactionSchema =
+      middleware.ctx.config.customTransactionSchema;
   }
 }
 
@@ -163,7 +193,7 @@ type CeloTransaction = Transaction & {
 };
 
 class CeloTxMiddleware implements TransactionMiddleware {
-  constructor(private ctx: Web3Context) {
+  constructor(public ctx: Web3Context) {
     this.ctx.config.customTransactionSchema = {
       ...transactionSchema,
       properties: {
