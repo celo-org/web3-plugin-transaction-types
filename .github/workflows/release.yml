@@ -39,7 +39,3 @@ jobs:
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
           publish: bun run prepublishOnly
-          version: |
-            bun x changeset version &&
-            bun install &&
-            rm -rf node_modules/@celo/dev-utils/node_modules
