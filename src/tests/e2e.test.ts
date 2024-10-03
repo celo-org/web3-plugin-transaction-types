@@ -27,11 +27,6 @@ beforeAll(async () => {
   web3.registerPlugin(new CeloTransactionTypesPlugin());
   web3.celo.link(web3);
 
-  // NOTE: This is a hack I think, whenever we use web3.eth.sendTransaction
-  // it looses the celo context and can't serialize cip64 txs
-  web3.eth.config.customTransactionSchema =
-    web3.celo.config.customTransactionSchema;
-
   stableAddress = await web3.celo.getCoreContractAddress("StableTokenEUR");
   stable = new CeloContract(stableTokenEurABI, stableAddress, web3);
 
