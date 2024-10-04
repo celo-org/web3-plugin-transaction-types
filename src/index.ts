@@ -59,7 +59,7 @@ export class CeloTransactionTypesPlugin extends Web3PluginBase {
    *
    * @param contractName See https://docs.celo.org/contract-addresses
    * @returns the correct address for a given core contract name
-   *          depending on the network (mainnet, alfajores, baklava, dango, etc.)
+   *          depending on the network (mainnet, alfajores, baklava, etc.)
    */
   public async getCoreContractAddress(contractName: string) {
     return getContractAddressFromRegistry(this, contractName);
