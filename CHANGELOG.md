@@ -1,5 +1,11 @@
 # @celo/web3-plugin-transaction-types
 
+## 1.0.2
+
+### Patch Changes
+
+- [#8](https://github.com/celo-org/web3-plugin-transaction-types/pull/8) [`61253af`](https://github.com/celo-org/web3-plugin-transaction-types/commit/61253afb803c96a233d6a6c659e48dc1ba285feb) Thanks [@nicolasbrugneaux](https://github.com/nicolasbrugneaux)! - Remove dango
+
 ## 1.0.1
 
 ### Patch Changes
