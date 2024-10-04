@@ -98,7 +98,7 @@ test(
 );
 
 describe("dango", () => {
-  const _web3 = new Web3(CeloChains.dango.rpcUrl);
+  const _web3 = new Web3("https://forno.dango.celo-testnet.org");
   _web3.registerPlugin(new CeloTransactionTypesPlugin());
 
   test("isWhitelisted", () => {

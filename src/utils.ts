@@ -21,19 +21,12 @@ const alfajores = {
   rpcUrl: "https://alfajores-forno.celo-testnet.org",
   explorerUrl: "https://alfajores.celoscan.io",
 } as const;
-const dango = {
-  chainId: 44787,
-  rpcUrl: "https://forno.dango.celo-testnet.org",
-  explorerUrl: "https://celo-dango.blockscout.com/",
-} as const;
 
 export const CeloChains = {
   celo,
   mainnet: celo,
   alfajores,
   testnet: alfajores,
-  dango,
-  testnetl2: dango,
 } as const;
 
 export const PROXY_ADMIN_ADDRESS = "0x4200000000000000000000000000000000000018";
