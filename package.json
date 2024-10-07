@@ -10,7 +10,7 @@
   "homepage": "https://docs.celo.org/developer/web3",
   "repository": "https://github.com/celo-org/web3-plugin-transaction-types",
   "scripts": {
-    "prepublishOnly": "bun run clean && bun run build && changeset publish",
+    "prepublishOnly": "bun run clean && bun run build",
     "build": "bun run tsc -b .",
     "dev": "bun run tsc -b . --watch",
     "clean": "bun run tsc -b . --clean",
