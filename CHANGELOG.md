@@ -1,5 +1,11 @@
 # @celo/web3-plugin-transaction-types
 
+## 1.0.3
+
+### Patch Changes
+
+- [#15](https://github.com/celo-org/web3-plugin-transaction-types/pull/15) [`7583881`](https://github.com/celo-org/web3-plugin-transaction-types/commit/7583881d26cc312cdb3fa401a0c7bb8dc0ba0198) Thanks [@nicolasbrugneaux](https://github.com/nicolasbrugneaux)! - Change the web3 peerDependency to a stable version
+
 ## 1.0.2
 
 ### Patch Changes
