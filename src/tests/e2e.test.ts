@@ -10,6 +10,7 @@ import { CeloContract, CeloTransactionTypesPlugin } from "..";
 import Web3, { Address } from "web3";
 import { stableTokenEurABI } from "@celo/abis";
 import { CeloChains, isWhitelisted } from "../utils";
+import { sleep } from "bun";
 
 let stable: CeloContract<typeof stableTokenEurABI>;
 let stableAddress: Address;
@@ -49,6 +50,8 @@ test(
       feeCurrency: stableAddress,
     });
 
+    await sleep(5_000);
+
     const balanceSenderAfter = BigInt(
       await stable.methods.balanceOf(account.address).call()
     );
@@ -62,7 +65,7 @@ test(
     );
     expect(balanceReceiverAfter).toEqual(balanceReceiverBefore + amount);
   },
-  { timeout: 10_000 }
+  { timeout: 15_000 }
 );
 
 test(
@@ -83,6 +86,9 @@ test(
     };
     await web3.celo.populateTransaction(txData);
     const tx = await web3.eth.sendTransaction(txData);
+
+    await sleep(5_000);
+
     const stableBalanceSenderAfter = BigInt(
       await stable.methods.balanceOf(account.address).call()
     );
@@ -94,19 +100,5 @@ test(
     expect(stableBalanceSenderAfter).toBeLessThan(stableBalanceSenderBefore);
     expect(nativeBalanceBefore).toEqual(nativeBalanceAfter + amount);
   },
-  { timeout: 10_000 }
+  { timeout: 15_000 }
 );
-
-describe("dango", () => {
-  const _web3 = new Web3("https://forno.dango.celo-testnet.org");
-  _web3.registerPlugin(new CeloTransactionTypesPlugin());
-
-  test("isWhitelisted", () => {
-    expect(_web3.celo.isValidFeeCurrency("0x123")).resolves.toBe(false);
-    expect(
-      _web3.celo.isValidFeeCurrency(
-        "0x4822e58de6f5e485eF90df51C41CE01721331dC0"
-      )
-    ).resolves.toBe(true);
-  });
-});

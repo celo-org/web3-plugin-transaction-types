@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: "nightly-f625d0fa7c51e65b4bf1e8f7931cd1c6e2e285e9"
       - uses: oven-sh/setup-bun@v2
       - run: bun install
       - run: rm -rf node_modules/@celo/dev-utils/node_modules
