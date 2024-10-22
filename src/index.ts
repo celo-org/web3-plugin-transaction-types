@@ -231,7 +231,6 @@ class CeloTxMiddleware implements TransactionMiddleware {
     // NOTE: small hack:
     // `transactionBuilder` calls this.ctx.transactionBuilder if defined
     this.ctx.transactionBuilder = undefined;
-    // @ts-expect-error
     const tx: CeloTransaction = await transactionBuilder({
       ...options,
       transaction: transaction,
