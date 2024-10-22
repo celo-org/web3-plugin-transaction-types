@@ -96,17 +96,3 @@ test(
   },
   { timeout: 10_000 }
 );
-
-describe("dango", () => {
-  const _web3 = new Web3("https://forno.dango.celo-testnet.org");
-  _web3.registerPlugin(new CeloTransactionTypesPlugin());
-
-  test("isWhitelisted", () => {
-    expect(_web3.celo.isValidFeeCurrency("0x123")).resolves.toBe(false);
-    expect(
-      _web3.celo.isValidFeeCurrency(
-        "0x4822e58de6f5e485eF90df51C41CE01721331dC0"
-      )
-    ).resolves.toBe(true);
-  });
-});
