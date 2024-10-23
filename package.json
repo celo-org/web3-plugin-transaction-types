@@ -11,9 +11,11 @@
   "repository": "https://github.com/celo-org/web3-plugin-transaction-types",
   "scripts": {
     "prepublishOnly": "bun run clean && bun run build",
-    "build": "bun run tsc -b .",
+    "build": "bun run build:commonjs && bun run build:esm",
+    "build:commonjs": "bun run tsc --project ./tsconfig.json",
+    "build:esm": "bun run tsc --project ./tsconfig.esm.json",
     "dev": "bun run tsc -b . --watch",
-    "clean": "bun run tsc -b . --clean",
+    "clean": "rm ./*.tsbuildinfo && rm -r lib",
     "test": "bun test",
     "test:watch": "bun test --watch"
   },
@@ -21,8 +23,10 @@
     "lib/**/*"
   ],
   "exports": {
-    ".": "./lib/index.js"
+    "require": "./lib/commonjs/index.js",
+    "import": "./lib/esm/index.cjs"
   },
+  "type": "module",
   "peerDependencies": {
     "web3": ">= 4.13.1 < 5"
   },

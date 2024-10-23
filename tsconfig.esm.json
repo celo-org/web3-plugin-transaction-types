@@ -1,9 +1,11 @@
 {
   "extends": "@celo/typescript/tsconfig.library.json",
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "ES2023",
     "rootDir": "src",
-    "outDir": "lib/commonjs"
+    "outDir": "lib/esm",
+    "declaration": true,
+    "module": "ES2022"
   },
   "exclude": ["**/*.test.ts", "**/*.snap"],
   "include": ["src"]
