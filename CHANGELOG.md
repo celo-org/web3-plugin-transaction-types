@@ -1,5 +1,11 @@
 # @celo/web3-plugin-transaction-types
 
+## 1.0.4
+
+### Patch Changes
+
+- [#17](https://github.com/celo-org/web3-plugin-transaction-types/pull/17) [`344b435`](https://github.com/celo-org/web3-plugin-transaction-types/commit/344b435d146e9d3bb937e152f9bee60f73c696be) Thanks [@nicolasbrugneaux](https://github.com/nicolasbrugneaux)! - Add support for ESM imports
+
 ## 1.0.3
 
 ### Patch Changes
