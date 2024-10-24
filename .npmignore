@@ -5,6 +5,7 @@
 /src
 
 # exclude ts files and sourcemaps
+**/*.tsbuildinfo
 *.map
 *.ts
 
