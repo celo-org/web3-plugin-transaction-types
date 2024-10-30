@@ -1,7 +1,7 @@
 {
   "name": "@celo/web3-plugin-transaction-types",
   "version": "1.0.4",
-  "description": "TODO",
+  "description": "This is a web3 plugin to allow for Celo specific types of transactions (CIP64, etc..)",
   "author": "Celo",
   "license": "Apache-2.0",
   "main": "./lib/index.js",
@@ -15,7 +15,7 @@
     "build:commonjs": "bun run tsc --project ./tsconfig.json",
     "build:esm": "bun run tsc --project ./tsconfig.esm.json",
     "dev": "bun run tsc -b . --watch",
-    "clean": "rm ./*.tsbuildinfo && rm -r lib",
+    "clean": "rm -rf ./*.tsbuildinfo && rm -rf ./lib",
     "test": "bun test",
     "test:watch": "bun test --watch"
   },
@@ -24,7 +24,7 @@
   ],
   "exports": {
     "require": "./lib/commonjs/index.js",
-    "import": "./lib/esm/index.cjs"
+    "import": "./lib/esm/index.js"
   },
   "type": "module",
   "peerDependencies": {
