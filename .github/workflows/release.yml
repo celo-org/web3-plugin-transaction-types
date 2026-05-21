@@ -33,6 +33,9 @@ jobs:
       - run: bun install
       - run: rm -rf node_modules/@celo/dev-utils/node_modules
 
+      - name: Upgrade npm CLI
+        run: npm install -g npm@11.5.1
+
       - uses: changesets/action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
