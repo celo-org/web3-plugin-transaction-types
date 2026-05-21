@@ -10,7 +10,7 @@
   "homepage": "https://docs.celo.org/developer/web3",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/celo-org/web3-plugin-transaction-types"
+    "url": "git+https://github.com/celo-org/web3-plugin-transaction-types.git"
   },
   "scripts": {
     "prepublishOnly": "bun run clean && bun run build",
