@@ -8,7 +8,10 @@
   "types": "./lib/index.d.ts",
   "sideEffects": false,
   "homepage": "https://docs.celo.org/developer/web3",
-  "repository": "https://github.com/celo-org/web3-plugin-transaction-types",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/celo-org/web3-plugin-transaction-types"
+  },
   "scripts": {
     "prepublishOnly": "bun run clean && bun run build",
     "build": "bun run build:commonjs && bun run build:esm",
